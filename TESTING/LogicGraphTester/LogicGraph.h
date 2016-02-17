@@ -212,10 +212,10 @@ namespace LogicGraph
 
                     }
 
-                    storedOutput = gate(Ts,Fs) ? 1 : 0;
+                    storedOutput = gate(Ts,Fs);
                 }
 
-                return storedOutput == 1;
+                return storedOutput;
             }
 
             void invalidateOutput()
@@ -480,6 +480,8 @@ namespace LogicGraph
             auto ptr = (InputNode*)(inputs[index].get());
 
             ptr->setVal(val);
+
+            ptr->invalidateOutput();
         }
 
         void collectOutput(Key gate,unsigned index)

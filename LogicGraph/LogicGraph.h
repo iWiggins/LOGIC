@@ -9,7 +9,7 @@
 #include <vector>
 #include <unordered_set>
 #include <algorithm>
-#pragma unmanaged
+
 namespace LogicGraph
 {
     /// <summary>
@@ -212,10 +212,10 @@ namespace LogicGraph
 
                     }
 
-                    storedOutput = gate(Ts,Fs) ? 1 : 0;
+                    storedOutput = gate(Ts,Fs);
                 }
 
-                return storedOutput == 1;
+                return storedOutput;
             }
 
             void invalidateOutput()
@@ -275,7 +275,7 @@ namespace LogicGraph
 
         private:
 
-            int storedOutput;
+            SByte storedOutput;
             Gate gate;
             Map inputs;
         };
@@ -408,8 +408,8 @@ namespace LogicGraph
 
         ~LogicGraph()
         {
-            delete [] inputs;
-            delete [] outputs;
+            if(inputs != nullptr) delete [] inputs;
+            if(outputs != nullptr) delete [] outputs;
         }
 
         Key addGate(Gate gate)
@@ -480,6 +480,8 @@ namespace LogicGraph
             auto ptr = (InputNode*)(inputs[index].get());
 
             ptr->setVal(val);
+
+            ptr->invalidateOutput();
         }
 
         void collectOutput(Key gate,unsigned index)
