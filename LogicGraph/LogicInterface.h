@@ -24,6 +24,7 @@ extern "C" __declspec(dllexport) void CreateLogicGraph(int inputCount,int output
 extern "C" __declspec(dllexport) void DestroyLogicGraph()
 {
     if(LogicGraph::Instance != nullptr) delete LogicGraph::Instance;
+    LogicGraph::Instance = nullptr;
 }
 
 /// <summary>
