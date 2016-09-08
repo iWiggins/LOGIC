@@ -14,26 +14,31 @@ namespace LogicTester
 
             var keyNot = LogicSharp.LogicSimulator.addGate(LogicSharp.GateType.Not);
             var keyAnd = LogicSharp.LogicSimulator.addGate(LogicSharp.GateType.And);
+            var keyOr = LogicSharp.LogicSimulator.addGate(LogicSharp.GateType.Or);
 
-            LogicSharp.LogicSimulator.connectGates(keyAnd,keyNot);
+            LogicSharp.LogicSimulator.connectGates(keyOr,keyAnd);
 
             LogicSharp.LogicSimulator.inputToGate(keyAnd,0);
 
-            LogicSharp.LogicSimulator.inputToGate(keyNot,1);
+            LogicSharp.LogicSimulator.inputToGate(keyOr,1);
 
-            Action<string> act = (string s) => {
+            LogicSharp.LogicSimulator.connectGates(keyNot,keyOr);
 
-                LogicSharp.LogicSimulator.feedInputString(s);
+            var code = LogicSharp.LogicSimulator.connectGates(keyAnd,keyNot);
 
-                var outNot = LogicSharp.LogicSimulator.testOutput(keyNot);
-                var outAnd = LogicSharp.LogicSimulator.testOutput(keyAnd);
+            //Action<string> act = (string s) => {
 
-                Console.WriteLine("x0={0} x1={1}",s[0],s[1]);
-                Console.WriteLine("Notx1={0}",outNot);
-                Console.WriteLine("x0 and Notx1={0}",outAnd);
-            };
+            //    LogicSharp.LogicSimulator.feedInputString(s);
 
-            act("11");
+            //    var outNot = LogicSharp.LogicSimulator.testOutput(keyNot);
+            //    var outAnd = LogicSharp.LogicSimulator.testOutput(keyAnd);
+
+            //    Console.WriteLine("x0={0} x1={1}",s[0],s[1]);
+            //    Console.WriteLine("Notx1={0}",outNot);
+            //    Console.WriteLine("x0 and Notx1={0}",outAnd);
+            //};
+
+            //act("11");
 
             Console.ReadLine();
         }

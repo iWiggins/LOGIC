@@ -65,7 +65,7 @@ namespace LogicGraph
             /// <returns>
             ///  0: Success
             ///  1: Input already exists
-            ///  2: Given key is an output
+            ///  2: Given key is an output (recursion)
             ///  3: (for inverter) Already has an input
             /// -1: (for input) This is an input node, it cannot have an input added
             /// </returns>
@@ -92,6 +92,7 @@ namespace LogicGraph
             /// </summary>
             /// <returns>
             ///  0: Success
+            /// </returns>
             SByte addOutput(Key k,Ptr value)
             {
                 outputs[k] = value;
@@ -300,8 +301,12 @@ namespace LogicGraph
 
             SByte addInput(Key k,Ptr value)
             {
+                if(input == value) return 1;
+                if(isOutput(shared_from_this(),k)) return 2;
                 if(input != nullptr) return 3;
                 input = value;
+                value->addOutput(key,shared_from_this());
+                invalidateOutput();
                 return 0;
             }
 
