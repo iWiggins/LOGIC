@@ -10,30 +10,35 @@ namespace LogicTester
     {
         static void Main(string[] args)
         {
-            LogicSharp.LogicSimulator.CreateLogicGraph(2,1);
+            LogicSharp.LogicGraph logicGraph = new LogicSharp.LogicGraph(2,1);
 
-            var keyNot = LogicSharp.LogicSimulator.addGate(LogicSharp.GateType.Not);
-            var keyAnd = LogicSharp.LogicSimulator.addGate(LogicSharp.GateType.And);
+            var keyNot = logicGraph.addGate(LogicSharp.GateType.Not);
+            var keyAnd = logicGraph.addGate(LogicSharp.GateType.And);
+            var keyOr = logicGraph.addGate(LogicSharp.GateType.Or);
 
-            LogicSharp.LogicSimulator.connectGates(keyAnd,keyNot);
+            logicGraph.connectGates(keyOr,keyAnd);
 
-            LogicSharp.LogicSimulator.inputToGate(keyAnd,0);
+            logicGraph.inputToGate(keyAnd,0);
 
-            LogicSharp.LogicSimulator.inputToGate(keyNot,1);
+            logicGraph.inputToGate(keyOr,1);
 
-            Action<string> act = (string s) => {
+            logicGraph.connectGates(keyNot,keyOr);
 
-                LogicSharp.LogicSimulator.feedInputString(s);
+            var code = logicGraph.connectGates(keyAnd,keyNot);
 
-                var outNot = LogicSharp.LogicSimulator.testOutput(keyNot);
-                var outAnd = LogicSharp.LogicSimulator.testOutput(keyAnd);
+            //Action<string> act = (string s) => {
 
-                Console.WriteLine("x0={0} x1={1}",s[0],s[1]);
-                Console.WriteLine("Notx1={0}",outNot);
-                Console.WriteLine("x0 and Notx1={0}",outAnd);
-            };
+            //    logicGraph.feedInputString(s);
 
-            act("11");
+            //    var outNot = logicGraph.testOutput(keyNot);
+            //    var outAnd = logicGraph.testOutput(keyAnd);
+
+            //    Console.WriteLine("x0={0} x1={1}",s[0],s[1]);
+            //    Console.WriteLine("Notx1={0}",outNot);
+            //    Console.WriteLine("x0 and Notx1={0}",outAnd);
+            //};
+
+            //act("11");
 
             Console.ReadLine();
         }
