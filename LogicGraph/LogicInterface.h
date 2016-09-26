@@ -4,28 +4,15 @@
 
 #include "LogicGraph.h"
 
-namespace LogicGraph
-{
-    static LogicGraph* Instance = nullptr;
-}
-
 /// <summary>
 /// Creates the LogicGraph instance.
 /// </summary>
-extern "C" __declspec(dllexport) void CreateLogicGraph(int inputCount,int outputCount)
-{
-    if(LogicGraph::Instance != nullptr) delete LogicGraph::Instance;
-    LogicGraph::Instance = new LogicGraph::LogicGraph(inputCount,outputCount);
-}
+extern "C" __declspec(dllexport) void* CreateLogicGraph(int inputCount,int outputCount);
 
 /// <summary>
 /// Destroys the LogicGraph instance.
 /// </summary>
-extern "C" __declspec(dllexport) void DestroyLogicGraph()
-{
-    if(LogicGraph::Instance != nullptr) delete LogicGraph::Instance;
-    LogicGraph::Instance = nullptr;
-}
+extern "C" __declspec(dllexport) void DestroyLogicGraph(void* logicGraph);
 
 /// <summary>
 /// Adds a gate to the logic graph.
@@ -43,18 +30,7 @@ extern "C" __declspec(dllexport) void DestroyLogicGraph()
 /// 0: Invalid type.
 /// Else: The key of the gate added.
 /// </returns>
-extern "C" __declspec(dllexport) LogicGraph::LogicGraph::Key addGate(int type)
-{
-    switch(type){
-    case  0: return LogicGraph::Instance->addGate(LogicGraph::LogicGraph::Gates::AND);
-    case  1: return LogicGraph::Instance->addGate(LogicGraph::LogicGraph::Gates::OR);
-    case  2: return LogicGraph::Instance->addInverter();
-    case  3: return LogicGraph::Instance->addGate(LogicGraph::LogicGraph::Gates::NAND);
-    case  4: return LogicGraph::Instance->addGate(LogicGraph::LogicGraph::Gates::NOR);
-    case  5: return LogicGraph::Instance->addGate(LogicGraph::LogicGraph::Gates::XOR);
-    default: return 0;
-    }
-}
+extern "C" __declspec(dllexport) LogicGraph::LogicGraph::Key addGate(void* logicGraph,int type);
 
 /// <summary>
 /// Connects two gates.
@@ -66,10 +42,7 @@ extern "C" __declspec(dllexport) LogicGraph::LogicGraph::Key addGate(int type)
 ///  3: (for inverter) Already has an input
 /// -1: (for input) This is an input node, it cannot have an input added
 /// </returns>
-extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte connectGates(LogicGraph::LogicGraph::Key gate,LogicGraph::LogicGraph::Key input)
-{
-    return LogicGraph::Instance->connectGates(gate,input);
-}
+extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte connectGates(void*logicGraph,LogicGraph::LogicGraph::Key gate,LogicGraph::LogicGraph::Key input);
 
 /// <summary>
 /// Removes an input from the gate.
@@ -85,10 +58,7 @@ extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte connectGates(Logi
 /// -3: This gate is not an output to passed input.
 /// -4: (for input) This is an input node, it cannot have an input removed
 /// </returns>
-extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte disconnectGates(LogicGraph::LogicGraph::Key gate,LogicGraph::LogicGraph::Key input)
-{
-    return LogicGraph::Instance->disconnectGates(gate,input);
-}
+extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte disconnectGates(void* logicGraph,LogicGraph::LogicGraph::Key gate,LogicGraph::LogicGraph::Key input);
 
 /// <summary>
 /// Removes the gate from the graph.
@@ -99,42 +69,27 @@ extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte disconnectGates(L
 /// -1: An output does not list this as an input. (from Node.disconnect)
 ///  0: Success
 /// </returns>
-extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte removeGate(LogicGraph::LogicGraph::Key gate)
-{
-    return LogicGraph::Instance->removeGate(gate);
-}
+extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte removeGate(void* logicGraph,LogicGraph::LogicGraph::Key gate);
 
 /// <summary>
 /// Gets the key of the indexed input gate.
 /// </summary>
-extern "C" __declspec(dllexport) LogicGraph::LogicGraph::Key getInputKey(int index)
-{
-    return LogicGraph::Instance->getInputKey(index);
-}
+extern "C" __declspec(dllexport) LogicGraph::LogicGraph::Key getInputKey(void* logicGraph,int index);
 
 /// <summary>
 /// Creates a key.
 /// </summary>
-extern "C" __declspec(dllexport) LogicGraph::LogicGraph::Key createKey()
-{
-    return LogicGraph::Instance->createKey();
-}
+extern "C" __declspec(dllexport) LogicGraph::LogicGraph::Key createKey(void* logicGraph);
 
 /// <summary>
 /// Sets the value of the indexed input.
 /// </summary>
-extern "C" __declspec(dllexport) void setInputVal(int index,bool value)
-{
-    LogicGraph::Instance->setInputVal(index,value);
-}
+extern "C" __declspec(dllexport) void setInputVal(void* logicGraph,int index,bool value);
 
 /// <summary>
 /// Sets the gate to be the indexed output.
 /// </summary>
-extern "C" __declspec(dllexport) void collectOutput(LogicGraph::LogicGraph::Key gate,int index)
-{
-    LogicGraph::Instance->collectOutput(gate,index);
-}
+extern "C" __declspec(dllexport) void collectOutput(void* logicGraph,LogicGraph::LogicGraph::Key gate,int index);
 
 /// <summary>
 /// Returns the output with the given index.
@@ -146,10 +101,7 @@ extern "C" __declspec(dllexport) void collectOutput(LogicGraph::LogicGraph::Key 
 /// -2: A higher node returned an error (from Node.output)
 /// -3: An output does not exist.
 /// </returns>
-extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte getOutput(int index)
-{
-    return LogicGraph::Instance->getOutput(index);
-}
+extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte getOutput(void* logicGraph,int index);
 
 /// <summary>
 /// Returns the output of the gate based on the inputs.
@@ -160,10 +112,7 @@ extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte getOutput(int ind
 /// -1: No inputs
 /// -2: A higher node returned an error
 /// </returns>
-extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte testOutput(LogicGraph::LogicGraph::Key gate)
-{
-    return LogicGraph::Instance->testOutput(gate);
-}
+extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte testOutput(void* logicGraph,LogicGraph::LogicGraph::Key gate);
 
 /// <summary>
 /// Connects the indexed input to the gate.
@@ -175,10 +124,7 @@ extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte testOutput(LogicG
 ///  3: (for inverter) Already has an input
 /// -1: (for input) This is an input node, it cannot have an input added
 /// </returns>
-extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte inputToGate(LogicGraph::LogicGraph::Key gate,int index)
-{
-    return LogicGraph::Instance->inputToGate(gate,index);
-}
+extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte inputToGate(void* logicGraph,LogicGraph::LogicGraph::Key gate,int index);
 
 /// <summary>
 /// Removes the indexed input from the gate.
@@ -194,10 +140,7 @@ extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte inputToGate(Logic
 /// -3: This gate is not an output to passed input.
 /// -4: (for input) This is an input node, it cannot have an input removed
 /// </returns>
-extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte removeInputToGate(LogicGraph::LogicGraph::Key gate,int index)
-{
-    return LogicGraph::Instance->removeInputToGate(gate,index);
-}
+extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte removeInputToGate(void* logicGraph,LogicGraph::LogicGraph::Key gate,int index);
 
 /// <summary>
 /// Removes the connection between two gates.
@@ -213,9 +156,6 @@ extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte removeInputToGate
 /// -3: This gate is not an output to passed input.
 /// -4: (for input) This is an input node, it cannot have an input removed
 /// </returns>
-extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte removeConnection(LogicGraph::LogicGraph::Key gate0,LogicGraph::LogicGraph::Key gate1)
-{
-    return LogicGraph::Instance->removeConnection(gate0,gate1);
-}
+extern "C" __declspec(dllexport) LogicGraph::LogicGraph::SByte removeConnection(void* logicGraph,LogicGraph::LogicGraph::Key gate0,LogicGraph::LogicGraph::Key gate1);
 
 #endif//Logic_Interface
