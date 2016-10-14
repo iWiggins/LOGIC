@@ -18,95 +18,106 @@ char * LogicM::getTemplateInfo()
 
 LogicM::LogicM()
 {
-    Instance = nullptr;
+    //Do nothing
 }
 
 LogicM::~LogicM()
 {
-    if(Instance != nullptr) DestroyLogicGraph();
+    //Do nothing
 }
 
-void LogicM::CreateLogicGraph(int inputCount,int outputCount)
+void* CreateLogicGraph(int inputCount,int outputCount)
 {
-    if(Instance != nullptr) delete Instance;
-    Instance = new LogicGraph::LogicGraph(inputCount,outputCount);
+    return new LogicGraph::LogicGraph(inputCount,outputCount);
 }
 
-void LogicM::DestroyLogicGraph()
+void DestroyLogicGraph(void* logicGraph)
 {
-    if(Instance != nullptr) delete Instance;
-    Instance = nullptr;
+    delete logicGraph;
 }
 
-LogicGraph::LogicGraph::Key LogicM::addGate(int type)
+LogicGraph::LogicGraph::Key addGate(void*logicGraph,int type)
 {
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
     switch(type){
-    case  0: return Instance->addGate(LogicGraph::LogicGraph::Gates::AND);
-    case  1: return Instance->addGate(LogicGraph::LogicGraph::Gates::OR);
-    case  2: return Instance->addInverter();
-    case  3: return Instance->addGate(LogicGraph::LogicGraph::Gates::NAND);
-    case  4: return Instance->addGate(LogicGraph::LogicGraph::Gates::NOR);
-    case  5: return Instance->addGate(LogicGraph::LogicGraph::Gates::XOR);
+    case  0: return instance->addGate(LogicGraph::LogicGraph::Gates::AND);
+    case  1: return instance->addGate(LogicGraph::LogicGraph::Gates::OR);
+    case  2: return instance->addInverter();
+    case  3: return instance->addGate(LogicGraph::LogicGraph::Gates::NAND);
+    case  4: return instance->addGate(LogicGraph::LogicGraph::Gates::NOR);
+    case  5: return instance->addGate(LogicGraph::LogicGraph::Gates::XOR);
     default: return 0;
     }
 }
 
-LogicGraph::LogicGraph::SByte LogicM::connectGates(LogicGraph::LogicGraph::Key gate,LogicGraph::LogicGraph::Key input)
+LogicGraph::LogicGraph::SByte connectGates(void*logicGraph,LogicGraph::LogicGraph::Key gate,LogicGraph::LogicGraph::Key input)
 {
-    return Instance->connectGates(gate,input);
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->connectGates(gate,input);
 }
 
-LogicGraph::LogicGraph::SByte LogicM::disconnectGates(LogicGraph::LogicGraph::Key gate,LogicGraph::LogicGraph::Key input)
+LogicGraph::LogicGraph::SByte disconnectGates(void*logicGraph,LogicGraph::LogicGraph::Key gate,LogicGraph::LogicGraph::Key input)
 {
-    return Instance->disconnectGates(gate,input);
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->disconnectGates(gate,input);
 }
 
-LogicGraph::LogicGraph::SByte LogicM::removeGate(LogicGraph::LogicGraph::Key gate)
+LogicGraph::LogicGraph::SByte removeGate(void* logicGraph,LogicGraph::LogicGraph::Key gate)
 {
-    return Instance->removeGate(gate);
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->removeGate(gate);
 }
 
-LogicGraph::LogicGraph::Key LogicM::getInputKey(int index)
+LogicGraph::LogicGraph::Key getInputKey(void* logicGraph,int index)
 {
-    return Instance->getInputKey(index);
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->getInputKey(index);
 }
 
-LogicGraph::LogicGraph::Key LogicM::createKey()
+LogicGraph::LogicGraph::Key createKey(void* logicGraph)
 {
-    return Instance->createKey();
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->createKey();
 }
 
-void LogicM::setInputVal(int index,bool value)
+void setInputVal(void* logicGraph,int index,bool value)
 {
-    Instance->setInputVal(index,value);
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->setInputVal(index,value);
 }
 
-void LogicM::collectOutput(LogicGraph::LogicGraph::Key gate,int index)
+void collectOutput(void* logicGraph,LogicGraph::LogicGraph::Key gate,int index)
 {
-    Instance->collectOutput(gate,index);
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->collectOutput(gate,index);
 }
 
-LogicGraph::LogicGraph::SByte LogicM::getOutput(int index)
+LogicGraph::LogicGraph::SByte getOutput(void* logicGraph,int index)
 {
-    return Instance->getOutput(index);
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->getOutput(index);
 }
 
-LogicGraph::LogicGraph::SByte LogicM::testOutput(LogicGraph::LogicGraph::Key gate)
+LogicGraph::LogicGraph::SByte testOutput(void* logicGraph,LogicGraph::LogicGraph::Key gate)
 {
-    return Instance->testOutput(gate);
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->testOutput(gate);
 }
 
-LogicGraph::LogicGraph::SByte LogicM::inputToGate(LogicGraph::LogicGraph::Key gate,int index)
+LogicGraph::LogicGraph::SByte inputToGate(void* logicGraph,LogicGraph::LogicGraph::Key gate,int index)
 {
-    return Instance->inputToGate(gate,index);
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->inputToGate(gate,index);
 }
 
-LogicGraph::LogicGraph::SByte LogicM::removeInputToGate(LogicGraph::LogicGraph::Key gate,int index)
+LogicGraph::LogicGraph::SByte removeInputToGate(void* logicGraph,LogicGraph::LogicGraph::Key gate,int index)
 {
-    return Instance->removeInputToGate(gate,index);
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->removeInputToGate(gate,index);
 }
 
-LogicGraph::LogicGraph::SByte LogicM::removeConnection(LogicGraph::LogicGraph::Key gate0,LogicGraph::LogicGraph::Key gate1)
+LogicGraph::LogicGraph::SByte removeConnection(void* logicGraph,LogicGraph::LogicGraph::Key gate0,LogicGraph::LogicGraph::Key gate1)
 {
-    return Instance->removeConnection(gate0,gate1);
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->removeConnection(gate0,gate1);
 }

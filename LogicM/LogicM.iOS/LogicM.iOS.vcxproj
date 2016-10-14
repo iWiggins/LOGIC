@@ -98,6 +98,7 @@
     <IncludePath>C:\MyPrograms\Projects\InProgress\LOGIC\LogicGraph;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <IncludePath>C:\MyPrograms\Projects\InProgress\LOGIC\LogicGraph;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
   </PropertyGroup>
