@@ -209,8 +209,9 @@ namespace LogicGraph
 
                     for(auto a : inputs){
 
-                        a.second->output() ? ++Ts : ++Fs;
-
+                        SByte o = a.second->output();
+                        if(o < 0) return o;
+                        o ? ++Ts : ++Fs;
                     }
 
                     storedOutput = gate(Ts,Fs);
