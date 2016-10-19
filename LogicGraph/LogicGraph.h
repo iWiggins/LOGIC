@@ -295,7 +295,7 @@ namespace LogicGraph
 
                 SByte lastOut = input->output();
 
-                if(lastOut < 0) return -2;
+                if(lastOut < 0) return lastOut;
 
                 return lastOut == 0 ? 1 : 0;
             }
