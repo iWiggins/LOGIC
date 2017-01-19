@@ -490,9 +490,14 @@ namespace LogicGraph
             ptr->invalidateOutput();
         }
 
-        void collectOutput(Key gate,unsigned index)
+        void openOutput(Key gate,unsigned index)
         {
             outputs[index] = nodes[gate];
+        }
+
+        void closeOutput(unsigned index)
+        {
+            outputs[index] = nullptr;
         }
 
         /// <summary>

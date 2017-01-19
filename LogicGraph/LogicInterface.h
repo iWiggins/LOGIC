@@ -89,7 +89,12 @@ extern "C" __declspec(dllexport) void setInputVal(void* logicGraph,int index,boo
 /// <summary>
 /// Sets the gate to be the indexed output.
 /// </summary>
-extern "C" __declspec(dllexport) void collectOutput(void* logicGraph,LogicGraph::LogicGraph::Key gate,int index);
+extern "C" __declspec(dllexport) void openOutput(void* logicGraph,LogicGraph::LogicGraph::Key gate,int index);
+
+/// <summary>
+/// Sets the indexed output to null.
+/// </summary>
+extern "C" __declspec(dllexport) void closeOutput(void* logicGraph,int index);
 
 /// <summary>
 /// Returns the output with the given index.

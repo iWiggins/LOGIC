@@ -115,7 +115,13 @@ namespace LogicSharp
         /// Sets the gate to be the indexed output.
         /// </summary>
         [DllImport("LogicGraph.dll",CallingConvention = CallingConvention.Cdecl)]
-        private static extern void collectOutput(void* logicGraph,uint gate,int index);
+        private static extern void openOutput(void* logicGraph,uint gate,int index);
+
+        /// <summary>
+        /// Sets the gate to be the indexed output.
+        /// </summary>
+        [DllImport("LogicGraph.dll",CallingConvention = CallingConvention.Cdecl)]
+        private static extern void closeOutput(void* logicGraph,int index);
 
         /// <summary>
         /// Returns the output with the given index.
@@ -299,9 +305,17 @@ namespace LogicSharp
         /// <summary>
         /// Sets the gate to be the indexed output.
         /// </summary>
-        public void collectOutput(uint gate,int index)
+        public void openOutput(uint gate,int index)
         {
-            collectOutput(instance,gate,index);
+            openOutput(instance,gate,index);
+        }
+
+        /// <summary>
+        /// Sets the indexed output to null.
+        /// </summary>
+        public void closeOutput(int index)
+        {
+            closeOutput(instance,index);
         }
 
         /// <summary>

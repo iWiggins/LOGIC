@@ -60,10 +60,16 @@ void setInputVal(void* logicGraph,int index,bool value)
     return instance->setInputVal(index,value);
 }
 
-void collectOutput(void* logicGraph,LogicGraph::LogicGraph::Key gate,int index)
+void openOutput(void* logicGraph,LogicGraph::LogicGraph::Key gate,int index)
 {
     LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
-    return instance->collectOutput(gate,index);
+    return instance->openOutput(gate,index);
+}
+
+void closeOutput(void* logicGraph,int index)
+{
+    LogicGraph::LogicGraph*instance = (LogicGraph::LogicGraph*)logicGraph;
+    return instance->closeOutput(index);
 }
 
 LogicGraph::LogicGraph::SByte getOutput(void* logicGraph,int index)
