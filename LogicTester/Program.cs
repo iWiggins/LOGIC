@@ -12,12 +12,19 @@ namespace LogicTester
         {
             LogicSharp.LogicGraph logicGraph = new LogicSharp.LogicGraph(2,1);
 
-            var keyOr0 = logicGraph.addGate(LogicSharp.GateType.Or);
-            var keyOr1 = logicGraph.addGate(LogicSharp.GateType.Or);
+            var andGate = logicGraph.addGate(LogicSharp.GateType.And);
 
-            logicGraph.connectGates(keyOr1,keyOr0);
+            logicGraph.inputToGate(andGate,0);
+            logicGraph.inputToGate(andGate,1);
 
-            Console.WriteLine("out: {0}",logicGraph.testOutput(keyOr1));
+            logicGraph.feedInputString("00");
+            Console.WriteLine("out: {0}",logicGraph.testOutput(andGate));
+
+            logicGraph.feedInputString("01");
+            Console.WriteLine("out: {0}",logicGraph.testOutput(andGate));
+
+            logicGraph.feedInputString("11");
+            Console.WriteLine("out: {0}",logicGraph.testOutput(andGate));
 
             Console.ReadLine();
         }

@@ -23,10 +23,13 @@ namespace LogicGraph
     public:
 
         typedef unsigned Key;
-        typedef std::shared_ptr<Node> Ptr;
-        typedef std::map<Key,Ptr> Map;
+        typedef std::shared_ptr<Node> S_Ptr;
+        typedef std::weak_ptr<Node> W_Ptr;
+        typedef std::map<Key,S_Ptr> S_Map;
+        typedef std::map<Key,W_Ptr> W_Map;
         typedef std::function<int(int,int)> Gate;
-        typedef Ptr* Vec;
+        typedef S_Ptr* S_Vec;
+        typedef W_Ptr* W_Vec;
         typedef std::unordered_set<Key> Set;
         typedef char SByte;
 
@@ -69,7 +72,7 @@ namespace LogicGraph
             ///  3: (for inverter) Already has an input
             /// -1: (for input) This is an input node, it cannot have an input added
             /// </returns>
-            virtual SByte addInput(Key k,Ptr value) = 0;
+            virtual SByte addInput(Key k,W_Ptr value) = 0;
 
             /// <summary>
             /// Removes an input from the map of inputs.
@@ -93,7 +96,7 @@ namespace LogicGraph
             /// <returns>
             ///  0: Success
             /// </returns>
-            SByte addOutput(Key k,Ptr value)
+            SByte addOutput(Key k,W_Ptr value)
             {
                 outputs[k] = value;
 
@@ -134,7 +137,8 @@ namespace LogicGraph
                 invalidateOutput();
 
                 for(auto a : outputs){
-                    SByte c = a.second->removeInput(key,false);
+                    auto p = a.second.lock();
+                    SByte c = p->removeInput(key,false);
 
                     if(c == -1) ret = -1;
                 }
@@ -159,27 +163,30 @@ namespace LogicGraph
             {
                 for(auto a : outputs){
 
-                    a.second->invalidateOutput();
+                    auto p = a.second.lock();
+                    p->invalidateOutput();
 
                 }
             }
 
         protected:
 
-            Map outputs;
+            W_Map outputs;
 
             Key key;
 
             /// <summary>
             /// Checks if any of the passed node is an output to any of the nodes along the tree.
             /// </summary>
-            static bool isOutput(Ptr current,Key node)
+            static bool isOutput(W_Ptr current,Key node)
             {
-                if(current->outputs.size() == 0) return false;
+                auto p = current.lock();
 
-                if(current->outputs.count(node) > 0) return true;
+                if(p->outputs.size() == 0) return false;
 
-                for(auto a : current->outputs){
+                if(p->outputs.count(node) > 0) return true;
+
+                for(auto a : p->outputs){
 
                     if(isOutput(a.second,node)) return true;
                 }
@@ -209,7 +216,8 @@ namespace LogicGraph
 
                     for(auto a : inputs){
 
-                        SByte o = a.second->output();
+                        auto p = a.second.lock();
+                        SByte o = p->output();
                         if(o < 0) return o;
                         o ? ++Ts : ++Fs;
                     }
@@ -227,14 +235,14 @@ namespace LogicGraph
                 Node::invalidateOutput();
             }
 
-            SByte addInput(Key k,Ptr value)
+            SByte addInput(Key k,W_Ptr value)
             {
                 if(inputs.count(k) > 0) return 1;
                 else if(isOutput(shared_from_this(),k)) return 2;
 
                 inputs[k] = value;
 
-                value->addOutput(key,shared_from_this());
+                value.lock()->addOutput(key,shared_from_this());
 
                 invalidateOutput();
 
@@ -247,7 +255,7 @@ namespace LogicGraph
                 if(inputs.count(k) == 0) return -2;
 
                 if(removeOut){
-                    SByte c = inputs[k]->removeOutput(key);
+                    SByte c = inputs[k].lock()->removeOutput(key);
                     if(c < 0) return -3;
                 }
                 inputs.erase(k);
@@ -265,7 +273,7 @@ namespace LogicGraph
                 }
 
                 for(auto a : inputKs){
-                    SByte c = inputs[a]->removeOutput(key);
+                    SByte c = inputs[a].lock()->removeOutput(key);
 
                     if(c < 0) return -2;
                 }
@@ -279,7 +287,7 @@ namespace LogicGraph
 
             SByte storedOutput;
             Gate gate;
-            Map inputs;
+            W_Map inputs;
         };
 
         struct InverterNode : Node
@@ -291,32 +299,38 @@ namespace LogicGraph
 
             SByte output()
             {
-                if(input == nullptr) return -1;
+                auto ip = input.lock();
 
-                SByte lastOut = input->output();
+                if(ip == nullptr) return -1;
+
+                SByte lastOut = ip->output();
 
                 if(lastOut < 0) return lastOut;
 
                 return lastOut == 0 ? 1 : 0;
             }
 
-            SByte addInput(Key k,Ptr value)
+            SByte addInput(Key k,W_Ptr value)
             {
-                if(input == value) return 1;
+                auto ip = input.lock();
+                auto iv = value.lock();
+                if(input.lock() == value.lock()) return 1;
                 if(isOutput(shared_from_this(),k)) return 2;
-                if(input != nullptr) return 3;
+                if(ip != nullptr) return 3;
                 input = value;
-                value->addOutput(key,shared_from_this());
+                iv->addOutput(key,shared_from_this());
                 invalidateOutput();
                 return 0;
             }
 
             SByte removeInput(Key k, bool remOut = true)
             {
-                if(input == nullptr) return -1;
+                auto ip = input.lock();
 
-                if(input->getKey() == k){
-                    if(remOut) input->removeOutput(key);
+                if(ip == nullptr) return -1;
+
+                if(ip->getKey() == k){
+                    if(remOut) ip->removeOutput(key);
                     input.reset();
                     return 0;
                 }
@@ -325,9 +339,11 @@ namespace LogicGraph
 
             SByte disconnect()
             {
-                if(input != nullptr){
+                auto ip = input.lock();
 
-                    SByte c = input->removeOutput(key);
+                if(ip != nullptr){
+
+                    SByte c = ip->removeOutput(key);
                     if(c < 0) return -2;
                     input.reset();
                 }
@@ -337,7 +353,7 @@ namespace LogicGraph
 
         private:
 
-            Ptr input;
+            W_Ptr input;
         };
 
         struct InputNode : Node
@@ -356,7 +372,7 @@ namespace LogicGraph
                 }
             }
 
-            SByte addInput(Key k,Ptr value)
+            SByte addInput(Key k,W_Ptr value)
             {
                 return -1;
             }
@@ -395,10 +411,12 @@ namespace LogicGraph
             static Gate XOR;
         };
 
+        LogicGraph() = delete;
+
         LogicGraph(unsigned inputCount,unsigned outputCount)
         {
             currentKey = 1;
-            inputs = new Ptr[inputCount];
+            inputs = new S_Ptr[inputCount];
 
             for(unsigned i = 0; i < inputCount; ++i){
 
@@ -409,7 +427,7 @@ namespace LogicGraph
                 inKeys.insert(k);
             }
 
-            outputs = new Ptr[outputCount];
+            outputs = new S_Ptr[outputCount];
         }
 
         ~LogicGraph()
@@ -552,9 +570,9 @@ namespace LogicGraph
 
     private:
 
-        Map nodes;
-        Vec inputs;
-        Vec outputs;
+        S_Map nodes;
+        S_Vec inputs;
+        S_Vec outputs;
         Key currentKey;
         Set inKeys;
     };
